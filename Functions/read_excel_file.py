@@ -2,7 +2,7 @@ import openpyxl
 
 def read_excel_file(file_path: str):
     # Sheets to read from, defined directly in the function
-    sheets_to_read = ['BUOC1', 'BUOC2', 'BUOC3', 'BUOC4', 'BUOC5', 'BUOC6']
+    sheets_to_read = ['BUOC1', 'BUOC2', 'BUOC3']
 
     def safe_str(value):
         return str(value) if value is not None else ""

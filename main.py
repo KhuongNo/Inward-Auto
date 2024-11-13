@@ -8,13 +8,14 @@ from Functions.take_screenshot import take_screenshot
 from Functions.log_task_in_jira import log_task_in_jira
 # from Functions.capture_network import capture_networks
 from Functions.log_console import log_console
-from Steps.khoitao import khoitao
+from Steps.khoitaoDTCDVKD import khoitaoDTCDVKD
+from Steps.khoitaoDTCHO import khoitaoDTCHO
 
 
 # Import the database functions
 from Functions.QueryDB import run_multiple_queries_and_save
 
-async def process_workflow(playwright, jira_url, jira_username, jira_password, data, start_index=0, run_all=False):
+async def process_workflow(playwright, jira_url, jira_username, jira_password, data, start_index=0, run_all=False, chon_qt=None):
     os.makedirs('screenshots', exist_ok=True)
     os.makedirs(network_data_path, exist_ok=True)
     os.makedirs(security_test_path, exist_ok=True)
@@ -43,8 +44,14 @@ async def process_workflow(playwright, jira_url, jira_username, jira_password, d
 
         try:
     # Your code start here -------------------------------------------------------------------------------------------------------------------------------------------------
+            print (f"{chon_qt}")
+            if (chon_qt == 'dvkd'):
             # try:
-            await khoitao(page,record)
+                await khoitaoDTCDVKD(page,record)
+            else:
+                if (chon_qt == 'ho'):
+                # try:
+                    await khoitaoDTCHO(page,record)
 
             # except Exception as e:
             #     screenshot_path = await take_screenshot(page, str(e), 'QDE')
@@ -83,20 +90,23 @@ async def process_workflow(playwright, jira_url, jira_username, jira_password, d
 async def main():
     # Read data from Excel file
     chon_qt = input("Start DTC from DVKD or from HO? (type 'HO' or a 'DVKD'): ")
+    print (f"{chon_qt}")
     if chon_qt.lower() == 'dvkd':
         data = read_excel_file(data_file_path)
-    if chon_qt.lower() == 'ho':
-        data = read_excel_file(data_file_path1)
+    else:
+        if chon_qt.lower() == 'ho':
+            data = read_excel_file(data_file_path1)
     choice = input("Run all test cases or just 1? (type 'all' or a number): ")
+    print(f"{data}")
 
     if choice.lower() == 'all':
         async with async_playwright() as playwright:
-            await process_workflow(playwright, jira_url, jira_username, jira_password, data, run_all=True)
+            await process_workflow(playwright, jira_url, jira_username, jira_password, data, run_all=True, chon_qt=chon_qt)
     else:
         try:
             specific_test = int(choice)
             async with async_playwright() as playwright:
-                await process_workflow(playwright, jira_url, jira_username, jira_password, data, start_index=specific_test)
+                await process_workflow(playwright, jira_url, jira_username, jira_password, data, start_index=specific_test, chon_qt=chon_qt)
         except ValueError:
             print("Invalid input. Please type 'all' or a number.")
 
