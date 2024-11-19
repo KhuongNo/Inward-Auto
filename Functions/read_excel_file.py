@@ -2,7 +2,7 @@ import openpyxl
 
 def read_excel_file(file_path: str):
     # Sheets to read from, defined directly in the function
-    sheets_to_read = ['BUOC1', 'BUOC2', 'BUOC3']
+    sheets_to_read = ['BUOC1', 'BUOC2', 'BUOC3', 'BUOC4', 'BUOC5', 'BUOC6']
 
     def safe_str(value):
         return str(value) if value is not None else ""
@@ -25,9 +25,9 @@ def read_excel_file(file_path: str):
 
             # Extract data from the first sheet (Sheet A)
             for key, value in {
-                "chon_gddn": safe_str(sheet_data[0][i][0]),
-                "user_buoc1": safe_str(sheet_data[0][i][1]),
-                "pass_buoc1": safe_str(sheet_data[0][i][2])
+                "user_buoc1": safe_str(sheet_data[0][i][0]),
+                "pass_buoc1": safe_str(sheet_data[0][i][1]),
+                "chon_gddn": safe_str(sheet_data[0][i][2])
             }.items():
                 if key in combined_data:
                     print(f"Duplicate key found: {key}")
@@ -46,12 +46,41 @@ def read_excel_file(file_path: str):
 
             for key, value in {
                 "user_buoc3": safe_str(sheet_data[2][i][0]),
-                "pass_buoc3": safe_str(sheet_data[2][i][0])
+                "pass_buoc3": safe_str(sheet_data[2][i][1])
             }.items():
                 if key in combined_data:
                     print(f"Duplicate key found: {key}")
                     raise ValueError(f"Duplicate key found: {key}")
                 combined_data[key] = value
+
+            for key, value in {
+                "user_buoc4": safe_str(sheet_data[3][i][0]),
+                "pass_buoc4": safe_str(sheet_data[3][i][1])
+            }.items():
+                if key in combined_data:
+                    print(f"Duplicate key found: {key}")
+                    raise ValueError(f"Duplicate key found: {key}")
+                combined_data[key] = value
+
+            for key, value in {
+                "user_buoc5": safe_str(sheet_data[4][i][0]),
+                "pass_buoc5": safe_str(sheet_data[4][i][1]),
+                "tick_TSHT": safe_str(sheet_data[4][i][2]),
+                "ketthucb5": safe_str(sheet_data[4][i][3])
+            }.items():
+                if key in combined_data:
+                    print(f"Duplicate key found: {key}")
+                    raise ValueError(f"Duplicate key found: {key}")
+                combined_data[key] = value
+
+            for key, value in {
+                "user_buoc6": safe_str(sheet_data[5][i][0]),
+                "pass_buoc6": safe_str(sheet_data[5][i][1])
+            }.items():
+                if key in combined_data:
+                    print(f"Duplicate key found: {key}")
+                    raise ValueError(f"Duplicate key found: {key}")
+                combined_data[key] = value 
             data.append(combined_data)
 
     return data

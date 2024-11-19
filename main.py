@@ -10,6 +10,11 @@ from Functions.log_task_in_jira import log_task_in_jira
 from Functions.log_console import log_console
 from Steps.khoitaoDTCDVKD import khoitaoDTCDVKD
 from Steps.khoitaoDTCHO import khoitaoDTCHO
+from Steps.kiemtrab2DTCHO import kiemtrab2DTCHO
+from Steps.tiepnhanb3DTCHO import tiepnhanb3DTCHO
+from Steps.kiemtrab4DTCHO import kiemtrab4DTCHO
+from Steps.tiepnhanb5DTCHO import tiepnhanb5DTCHO
+from Steps.pheduyetb6DTCHO import pheduyetb6DTCHO
 
 
 # Import the database functions
@@ -44,14 +49,26 @@ async def process_workflow(playwright, jira_url, jira_username, jira_password, d
 
         try:
     # Your code start here -------------------------------------------------------------------------------------------------------------------------------------------------
-            print (f"{chon_qt}")
             if (chon_qt == 'dvkd'):
             # try:
                 await khoitaoDTCDVKD(page,record)
             else:
                 if (chon_qt == 'ho'):
                 # try:
-                    await khoitaoDTCHO(page,record)
+                    if(record["chon_gddn"]== "BC"):
+                        await khoitaoDTCHO(page,record)
+                        await kiemtrab2DTCHO(page,record)
+                        await tiepnhanb3DTCHO(page,record)
+                        await kiemtrab4DTCHO(page,record)
+                        await tiepnhanb5DTCHO(page,record)
+                        if (record["tick_TSHT"]== "1"):
+                            await pheduyetb6DTCHO(page,record)
+                    if(record["chon_gddn"] != "BC"):
+                        await khoitaoDTCHO(page,record)
+                        await tiepnhanb3DTCHO(page,record)
+                        await tiepnhanb5DTCHO(page,record)
+                
+
 
             # except Exception as e:
             #     screenshot_path = await take_screenshot(page, str(e), 'QDE')
@@ -78,7 +95,7 @@ async def process_workflow(playwright, jira_url, jira_username, jira_password, d
                 print(f"Failed to close browser: {close_error}")
 
         if not run_all:
-            continue_running = input(f"Test case {index} finished. Run the rest of the test cases (from {index})? (Yes/No): ")
+            continue_running = input(f"Test case {index} finished. Run the rest of the test cases (from {index+1})? (Yes/No): ")
             if continue_running.lower() == 'yes':
                 run_all = True  # Set run_all to True to run the rest without further prompts
             else:
@@ -90,15 +107,12 @@ async def process_workflow(playwright, jira_url, jira_username, jira_password, d
 async def main():
     # Read data from Excel file
     chon_qt = input("Start DTC from DVKD or from HO? (type 'HO' or a 'DVKD'): ")
-    print (f"{chon_qt}")
     if chon_qt.lower() == 'dvkd':
         data = read_excel_file(data_file_path)
     else:
         if chon_qt.lower() == 'ho':
             data = read_excel_file(data_file_path1)
     choice = input("Run all test cases or just 1? (type 'all' or a number): ")
-    print(f"{data}")
-
     if choice.lower() == 'all':
         async with async_playwright() as playwright:
             await process_workflow(playwright, jira_url, jira_username, jira_password, data, run_all=True, chon_qt=chon_qt)
